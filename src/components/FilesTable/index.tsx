@@ -1,8 +1,21 @@
-import { useEffect, useState } from "react";
-import { Button, Space, Table } from "antd";
+import React, { useEffect, useState } from "react";
+import { Button, Space, Table, Typography } from "antd";
 import { delete_file, get_files } from "./apis.ts";
 import dayjs from "dayjs";
 import { FILE_PRE } from "../../utils/const.ts";
+const { Text } = Typography;
+const EllipsisMiddle: React.FC<{ suffixCount: number; children: string }> = ({
+  suffixCount,
+  children,
+}) => {
+  const start = children.slice(0, children.length - suffixCount - 10);
+  const suffix = children.slice(-suffixCount).trim();
+  return (
+    <Text style={{ maxWidth: 200 }} ellipsis={{ suffix, tooltip }}>
+      {start}
+    </Text>
+  );
+};
 
 const FilesTable = () => {
   const [histories, setHistories] = useState([]);
@@ -13,6 +26,11 @@ const FilesTable = () => {
       title: "文件名",
       dataIndex: "Key",
       key: "Key",
+      render: (text: string) => (
+        <Text style={{ width: 100 }} ellipsis={{ tooltip: text }}>
+          {text}
+        </Text>
+      ),
     },
     {
       title: "上传时间",
@@ -73,8 +91,9 @@ const FilesTable = () => {
   }, [fresh]);
 
   return (
-    <div style={{ marginTop: 16 }}>
+    <div style={{ marginTop: 16, maxWidth: 1300 }}>
       <Table
+        scroll={{ x: 300 }}
         dataSource={histories.map((h, idx) => ({ key: idx, ...h }))}
         columns={columns}
         loading={loading}
